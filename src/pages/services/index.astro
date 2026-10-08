@@ -59,7 +59,7 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
     // Old links such as /services#photocopying (used on Home) jump to that product's page.
     const hash = decodeURIComponent(location.hash.slice(1));
     if (hash && cards.some((c) => c.dataset.slug === hash)) {
-      location.replace('/services/' + hash);
+      location.replace((document.querySelector('[data-cat-link="all"]')?.getAttribute('href') || '/services') + '/' + hash);
     }
 
     const params = new URLSearchParams(location.search);

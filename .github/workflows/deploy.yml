@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy site to GitHub Pages
 on:
   push:
     branches: [main]
@@ -15,9 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: withastro/action@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx astro build --site https://mbaka-cmd.github.io --base /crosslink-printers
+      - run: node scripts/fix-base.mjs /crosslink-printers
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
