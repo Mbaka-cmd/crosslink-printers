@@ -104,3 +104,31 @@
   .pcard__cta .arrow { display: inline-block; transition: transform .2s; }
   .pcard:hover .pcard__cta .arrow { transform: translateX(5px); }
 }
+/* ---------- mobile refinements ---------- */
+.catalogue__wrap > *, .catalogue__main { min-width: 0; }
+
+@media (max-width: 899px) {
+  .catalogue__wrap { grid-template-columns: minmax(0, 1fr); }
+  .chips { padding-block: .5rem; }
+  .chips ul { scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .chips ul::-webkit-scrollbar { display: none; }
+  .chips li { flex: none; scroll-snap-align: start; }
+  .chips a { min-height: 40px; padding: 0 .75rem; gap: .35rem; font-size: .72rem; letter-spacing: .05em; }
+}
+
+@media (max-width: 639px) {
+  .cfilters { grid-template-columns: minmax(0, 1fr) 8.5rem; gap: .5rem; margin-bottom: 1rem; }
+  .field--sort { position: relative; }
+  .field--sort label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cfilters .field input, .cfilters .field select { min-height: 44px; padding: .5rem .65rem; font-size: .9rem; }
+  .catalogue__main .hd--m { font-size: 1.5rem; }
+  .catalogue__main .filter-status { margin: .35rem 0 1rem; }
+
+  .pgrid { gap: 1.25rem .75rem; }
+  .pcard { gap: .15rem; }
+  .pcard .media { aspect-ratio: 1 / 1 !important; margin-bottom: .3rem; border-top-width: 3px; }
+  .pcard__cat { display: none; }
+  .pcard__name { font-size: .92rem; }
+  .pcard__price { font-size: .85rem; }
+  .pcard__cta { margin-top: .2rem; font-size: .65rem; border-bottom-width: 2px; }
+}
