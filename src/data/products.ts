@@ -3,6 +3,10 @@
 // Pages and components only READ from here.
 // ============================================================
 
+import { TIERS } from './productExtras';
+
+import { SHEET_PRICES, SHEET_DESC } from './sheet.generated';
+
 export type PriceType = 'quote' | 'fixed' | 'from';
 export type ProductOption = {
   key: string;
@@ -124,13 +128,14 @@ for (const cat of categories) {
     if (seen.has(slug)) throw new Error(`Duplicate product slug: ${slug}`);
     seen.add(slug);
     if (HIDE.has(slug)) continue;
-    const price = PRICES[slug];
+    const tierPrices = (TIERS[slug] ?? []).map((t) => t.price).filter((n): n is number => n !== null);
+    const price = PRICES[slug] ?? SHEET_PRICES[slug] ?? (tierPrices.length ? { type: 'from' as const, amount: Math.min(...tierPrices) } : undefined);
     built.push({
       slug,
       name,
       category: cat.name,
       categorySlug: cat.slug,
-      description: DESC[slug] ?? `${name} from Crosslink Printers. Tell us what you need and we will confirm the details and the price with you.`,
+      description: SHEET_DESC[slug] ?? DESC[slug] ?? `${name} from Crosslink Printers. Tell us what you need and we will confirm the details and the price with you.`,
       priceType: price ? price.type : 'quote',
       startingPrice: price ? price.amount : null,
       featured,

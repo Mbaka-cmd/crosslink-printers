@@ -2,11 +2,23 @@
 interface Props { hasPrices: boolean; }
 const { hasPrices } = Astro.props;
 ---
-<form class="cfilters" role="search" id="catalogue-form" novalidate>
+<form class:list={['cfilters', { 'cfilters--price': hasPrices }]} role="search" id="catalogue-form" novalidate>
   <div class="field field--search">
     <label for="product-search" class="visually-hidden">Search products</label>
     <input id="product-search" type="search" placeholder="Search products..." autocomplete="off" />
   </div>
+  {hasPrices && (
+    <div class="field field--price">
+      <label for="product-price">Price</label>
+      <select id="product-price">
+        <option value="any">All prices</option>
+        <option value="lt1000">Under KES 1,000</option>
+        <option value="1000-10000">KES 1,000 to 10,000</option>
+        <option value="gt10000">Over KES 10,000</option>
+        <option value="quote">Request a quote</option>
+      </select>
+    </div>
+  )}
   <div class="field field--sort">
     <label for="product-sort">Sort</label>
     <select id="product-sort">

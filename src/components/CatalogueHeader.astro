@@ -1,0 +1,105 @@
+---
+import MobileHeader from './Header.astro';
+import { site, waLink, mapsLink } from '../data/site';
+import { categoriesWithCounts, products } from '../data/products';
+import { usdRate, rateIsDemo } from '../data/currency';
+
+const phone = site.phones[0];
+const rate = usdRate();
+const navMap: [string, string][] = [
+  ['business-corporate', 'Business'],
+  ['flyers-posters', 'Flyers'],
+  ['banners-large-format', 'Banners'],
+  ['events-occasions', 'Events'],
+  ['apparel', 'Apparel'],
+  ['stickers-labels', 'Stickers'],
+  ['promotional', 'Promo'],
+  ['stationery', 'Stationery'],
+  ['photos-framing', 'Photos'],
+];
+const nav = navMap.filter(([s]) => categoriesWithCounts.some((c) => c.slug === s));
+const mega = categoriesWithCounts.map((c) => ({ ...c, items: products.filter((p) => p.categorySlug === c.slug).slice(0, 6) }));
+---
+<div class="cat-mobile"><MobileHeader /></div>
+
+<div class="chead-wrap">
+  <div class="ctop">
+    <div class="container ctop__in">
+      <div class="ctop__l">
+        {site.phones.map((ph) => <a href={`tel:${ph.tel}`}>{ph.display}</a>)}
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+      <div class="ctop__r">
+        {rate && (
+          <div class="curtoggle" role="group" aria-label="Currency" data-usd-rate={rate}>
+            <button type="button" data-cur-btn="KES" aria-pressed="true">KES</button>
+            <button type="button" data-cur-btn="USD" aria-pressed="false">USD</button>
+            {rateIsDemo && <span class="curtoggle__demo">demo rate</span>}
+          </div>
+        )}
+        <span>Mt Kenya University Street, Nkubu</span>
+        <a href={mapsLink()} target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </div>
+    </div>
+  </div>
+
+  <header class="chead">
+    <div class="container chead__row">
+      <a class="cbrand" href="/"><span>{site.shortName}</span><small>PRINTERS / NKUBU</small></a>
+      <form class="csearch" role="search" action="/services" method="get">
+        <label for="hsearch" class="visually-hidden">Search products</label>
+        <input id="hsearch" name="q" type="search" placeholder="Search for business cards, banners, stickers, books..." autocomplete="off" />
+        <button type="submit">Search</button>
+      </form>
+      <div class="cquick">
+        <a href={`tel:${phone.tel}`}><b>Call</b><span>{phone.display}</span></a>
+        <a href={waLink()} target="_blank" rel="noopener noreferrer"><b>WhatsApp</b><span>Message us</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </div>
+    </div>
+
+    <div class="cnav">
+      <nav class="container cnav__row" aria-label="Product categories">
+        <details class="mega">
+          <summary><span class="mega__ico" aria-hidden="true"></span>All Products <span class="chev" aria-hidden="true"></span></summary>
+          <div class="mega__panel">
+            <div class="container mega__grid">
+              {mega.map((c) => (
+                <div>
+                  <h3><a href={`/services?c=${c.slug}`}>{c.name}</a></h3>
+                  <ul>
+                    {c.items.map((p) => <li><a href={`/services/${p.slug}`}>{p.name}</a></li>)}
+                    {c.count > c.items.length && <li><a class="mega__more" href={`/services?c=${c.slug}`}>View all {c.count} &rarr;</a></li>}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+        {nav.map(([slug, label]) => <a class="cnav__link" href={`/services?c=${slug}`}>{label}</a>)}
+        <a class="cnav__contact" href="/contact">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+</div>
+
+<script>
+  import { applyCurrency, setCur } from '../scripts/currency';
+
+  applyCurrency();
+  document.querySelectorAll<HTMLButtonElement>('[data-cur-btn]').forEach((b) =>
+    b.addEventListener('click', () => setCur(b.dataset.curBtn === 'USD' ? 'USD' : 'KES'))
+  );
+
+  const d = document.querySelector<HTMLDetailsElement>('.mega');
+  if (d) {
+    document.addEventListener('click', (e) => {
+      if (d.open && !d.contains(e.target as Node)) d.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && d.open) {
+        d.open = false;
+        d.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

@@ -1,0 +1,40 @@
+// ============================================================
+// OPTIONAL PRODUCT DETAIL. Everything here is empty on purpose.
+// A section appears on a product page only when you add real, confirmed values for it.
+// Keys are product slugs, for example 'receipt-books' or 'business-cards'.
+// ============================================================
+
+export type Tier = { label: string; price: number | null; note?: string };
+export type Turnaround = { key: string; label: string; note?: string; extra: number | null };
+export type Template = { label: string; href: string };
+export type InfoBlock = { title: string; body: string };
+
+// "Select print run" choices. Set price to null if the price is on request.
+// Remember to also set PRICES in products.ts if you want the price on the catalogue card.
+// Example (use REAL values only):
+// 'receipt-books': [
+//   { label: '1 book', price: 1500 },
+//   { label: '5 books', price: 6500 },
+// ],
+export const TIERS: Record<string, Tier[]> = {};
+
+// Turnaround choices. extra = added cost in KES, or null if none or unknown.
+// Example: 'business-cards': [{ key: 'standard', label: 'Standard', note: 'Confirmed on order', extra: null }],
+export const TURNAROUND: Record<string, Turnaround[]> = {};
+
+// Downloadable design templates. href is a link or a file in the public folder.
+// Example: 'business-cards': [{ label: 'PDF', href: '/templates/business-card.pdf' }],
+export const TEMPLATES: Record<string, Template[]> = {};
+
+// Collapsible information sections (materials, finishing, delivery, artwork guidelines...).
+// Example: 'wedding-cards': [{ title: 'Paper and finishing', body: 'Real details here.' }],
+export const INFO: Record<string, InfoBlock[]> = {};
+
+export function getExtras(slug: string) {
+  return {
+    tiers: TIERS[slug] ?? [],
+    turnaround: TURNAROUND[slug] ?? [],
+    templates: TEMPLATES[slug] ?? [],
+    info: INFO[slug] ?? [],
+  };
+}

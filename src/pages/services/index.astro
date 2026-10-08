@@ -1,25 +1,42 @@
 ---
 import '../../styles/catalogue.css';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
+import Header from '../../components/CatalogueHeader.astro';
 import Footer from '../../components/Footer.astro';
 import PageHero from '../../components/PageHero.astro';
 import CategorySidebar from '../../components/CategorySidebar.astro';
 import ProductFilters from '../../components/ProductFilters.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import ProductImage from '../../components/ProductImage.astro';
 import { products, categoriesWithCounts, hasPrices } from '../../data/products';
-import { waLink } from '../../data/site';
+import { getProductImages } from '../../data/productImages';
+import { guideBlurb, servicesFaq } from '../../data/servicesPage';
+import { GLOBAL } from '../../data/productExtras';
+import { site, waLink } from '../../data/site';
 
 const names = Object.fromEntries(categoriesWithCounts.map((c) => [c.slug, c.name]));
 const lost = waLink('Hello Crosslink Printers, I could not find what I need on your website. Can you help?');
+const quote = waLink('Hello Crosslink Printers, I would like a quote. I found you on your website.');
+const popular = products.filter((p) => p.featured).slice(0, 8);
+
+const guide = categoriesWithCounts.map((c) => {
+  const items = products.filter((p) => p.categorySlug === c.slug);
+  const rep = items.find((p) => getProductImages(p.slug).length > 0) ?? items[0];
+  return { ...c, items, rep, blurb: guideBlurb(c.slug, items.map((i) => i.name)) };
+});
 ---
 <BaseLayout title="Printing Products and Services in Nkubu | Crosslink Printers" description="Browse printing products from Crosslink Printers in Nkubu: business cards, receipt books, flyers, posters, banners, wedding cards, stickers, photos, documents and more." path="/services">
   <Header slot="header" />
   <PageHero eyebrow="Services" title="All printing<br />products." lead="Browse by category, search, then message us about the product you want." />
-  <section class="section">
+
+  <section class="section" id="catalogue">
     <div class="container catalogue__wrap">
       <CategorySidebar cats={categoriesWithCounts} total={products.length} />
       <div class="catalogue__main">
+        <nav class="popular" aria-label="Popular products">
+          <span class="popular__label">Popular</span>
+          {popular.map((p) => <a href={`/services/${p.slug}`}>{p.name}</a>)}
+        </nav>
         <ProductFilters hasPrices={hasPrices} />
         <h2 class="hd hd--m" id="catalogue-title">All products</h2>
         <p class="filter-status" id="catalogue-status" role="status" aria-live="polite">{products.length} products</p>
@@ -39,6 +56,72 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
       </div>
     </div>
   </section>
+
+  <section class="section section--rule" aria-labelledby="how-h">
+    <div class="container">
+      <p class="eyebrow">How it works</p>
+      <h2 class="hd hd--l" id="how-h">From your idea<br />to your print.</h2>
+      <ol class="how">
+        <li><span class="how__n">01</span><h3>Choose a product</h3><p>Pick what you need from the catalogue and tell us the quantity and any details.</p></li>
+        <li><span class="how__n">02</span><h3>Send it on WhatsApp</h3><p>One tap sends your selection to Crosslink. Add your design in the chat if you have one.</p></li>
+        <li><span class="how__n">03</span><h3>We confirm</h3><p>Crosslink replies to confirm the details, the price and the timing.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--rule" id="guide" aria-labelledby="guide-h">
+    <div class="container">
+      <p class="eyebrow">Category guide</p>
+      <h2 class="hd hd--l" id="guide-h">What we print,<br />by category.</h2>
+      <div class="guide">
+        {guide.map((g) => (
+          <article class="gcard">
+            <div class="gcard__media"><ProductImage slug={g.rep.slug} name={g.name} ratio="16 / 9" decorative sizes="(min-width: 1000px) 30vw, (min-width: 640px) 45vw, 100vw" /></div>
+            <div class="gcard__body">
+              <h3>{g.name}</h3>
+              <p>{g.blurb}</p>
+              <ul class="gcard__chips">{g.items.slice(0, 4).map((i) => <li><a href={`/services/${i.slug}`}>{i.name}</a></li>)}</ul>
+              <a class="gcard__all" href={`/services?c=${g.slug}#catalogue`}>All {g.name} <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {GLOBAL.delivery.length > 0 && (
+    <section class="section section--rule" aria-labelledby="zones-h">
+      <div class="container">
+        <p class="eyebrow">Collection and delivery</p>
+        <h2 class="hd hd--m" id="zones-h">Where we deliver.</h2>
+        <table class="ztable">
+          <thead><tr><th scope="col">Zone</th><th scope="col">Price</th></tr></thead>
+          <tbody>{GLOBAL.delivery.map((z) => <tr><td>{z.zone}</td><td>{z.price}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--rule" aria-labelledby="sfaq-h">
+    <div class="container">
+      <p class="eyebrow">Questions</p>
+      <h2 class="hd hd--l" id="sfaq-h">Printing<br />services FAQ.</h2>
+      <div class="faqgrid">
+        {servicesFaq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-ink cband" aria-labelledby="cband-h">
+    <div class="container">
+      <h2 class="hd hd--l" id="cband-h">Ready to start<br />printing?</h2>
+      <div class="cta-row">
+        <a class="btn" href="/services#catalogue">Browse all products <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--ghost" href={quote} target="_blank" rel="noopener noreferrer">Get a free quote <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </div>
+    </div>
+  </section>
+
   <Footer slot="footer" />
 </BaseLayout>
 
@@ -46,6 +129,7 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
   const grid = document.getElementById('product-grid');
   const search = document.getElementById('product-search') as HTMLInputElement | null;
   const sort = document.getElementById('product-sort') as HTMLSelectElement | null;
+  const priceSel = document.getElementById('product-price') as HTMLSelectElement | null;
   const form = document.getElementById('catalogue-form');
   const status = document.getElementById('catalogue-status');
   const title = document.getElementById('catalogue-title');
@@ -59,7 +143,7 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
     // Old links such as /services#photocopying (used on Home) jump to that product's page.
     const hash = decodeURIComponent(location.hash.slice(1));
     if (hash && cards.some((c) => c.dataset.slug === hash)) {
-      location.replace((document.querySelector('[data-cat-link="all"]')?.getAttribute('href') || '/services') + '/' + hash);
+      location.replace('/services/' + hash);
     }
 
     const params = new URLSearchParams(location.search);
@@ -68,6 +152,16 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
 
     const num = (v?: string) => (v ? Number(v) : null);
 
+    function priceOk(pv: number | null): boolean {
+      const band = priceSel ? priceSel.value : 'any';
+      if (band === 'any') return true;
+      if (band === 'quote') return pv === null;
+      if (pv === null) return false;
+      if (band === 'lt1000') return pv < 1000;
+      if (band === '1000-10000') return pv >= 1000 && pv <= 10000;
+      return pv > 10000;
+    }
+
     function apply() {
       const terms = search!.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
       let shown = 0;
@@ -75,7 +169,7 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
         const okCat = cat === 'all' || c.dataset.cat === cat;
         const hay = c.dataset.search || '';
         const okText = terms.every((t) => hay.includes(t));
-        c.hidden = !(okCat && okText);
+        c.hidden = !(okCat && okText && priceOk(num(c.dataset.price)));
         if (!c.hidden) shown++;
       }
 
@@ -118,6 +212,7 @@ const lost = waLink('Hello Crosslink Printers, I could not find what I need on y
     }
     search.addEventListener('input', apply);
     sort.addEventListener('change', apply);
+    priceSel?.addEventListener('change', apply);
     form?.addEventListener('submit', (e) => e.preventDefault());
     apply();
     document.querySelector<HTMLElement>('.chips [aria-current="true"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });

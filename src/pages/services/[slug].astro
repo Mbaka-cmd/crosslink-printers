@@ -1,13 +1,13 @@
 ---
 import '../../styles/catalogue.css';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
+import Header from '../../components/CatalogueHeader.astro';
 import Footer from '../../components/Footer.astro';
 import ProductImage from '../../components/ProductImage.astro';
-import ProductCard from '../../components/ProductCard.astro';
 import { products, priceLabel, relatedProducts } from '../../data/products';
 import type { Product } from '../../data/products';
 import { getProductImages } from '../../data/productImages';
+import { getExtras } from '../../data/productExtras';
 import { site, waLink } from '../../data/site';
 
 // Runs once at build time: one page is generated for every product.
@@ -17,13 +17,29 @@ export function getStaticPaths() {
 
 const { product } = Astro.props as { product: Product };
 const p = product;
-const isQuote = p.startingPrice === null;
+const ex = getExtras(p.slug, p.name);
+const hasTiers = ex.tiers.length > 0;
+const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+const tiersView = ex.tiers.map((t) => ({ ...t, unit: t.qty && t.price !== null ? Math.round(t.price / t.qty) : null }));
+const tierPrices = ex.tiers.map((t) => t.price).filter((n): n is number => n !== null);
+const startKes = p.startingPrice ?? (tierPrices.length ? Math.min(...tierPrices) : null);
+const isQuote = startKes === null;
+const showStarting = startKes !== null && (p.startingPrice === null ? tierPrices.length > 0 : p.priceType === 'from');
+
 const verb = isQuote ? 'request a quote for' : 'enquire about';
 const defaultMsg = `Hello Crosslink Printers, I would like to ${verb} ${p.name}.\nI found this product on your website.`;
 const waBase = waLink().split('?')[0];
 const phone = site.phones[0];
-const extra = getProductImages(p.slug).length - 1;
-const related = relatedProducts(p);
+const imgCount = Math.max(getProductImages(p.slug).length, 1);
+const related = relatedProducts(p, 4);
+
+// How the website works (true for every product). Product-specific answers go in products.ts FAQS.
+const generalFaqs = [
+  { q: 'How do I get a price?', a: 'Fill in the form above and send it on WhatsApp. Crosslink replies to confirm the details and the price.' },
+  { q: 'How do I send my design?', a: 'Send the file in the WhatsApp chat after it opens. If you do not have a design yet, tell us what you want on it.' },
+];
+const faqs = [...p.faqs, ...generalFaqs];
 
 const ld = {
   '@context': 'https://schema.org',
@@ -37,7 +53,7 @@ const ld = {
 <BaseLayout title={`${p.name} Printing in Nkubu | Crosslink Printers`} description={`${p.description} Enquire about ${p.name} at Crosslink Printers, Nkubu.`} path={`/services/${p.slug}`}>
   <Header slot="header" />
   <script type="application/ld+json" is:inline set:html={JSON.stringify(ld)} />
-  <section class="section">
+  <section class="section pdp-section">
     <div class="container">
       <nav class="crumbs" aria-label="Breadcrumb">
         <ol>
@@ -48,22 +64,34 @@ const ld = {
         </ol>
       </nav>
 
+      {ex.demo && <p class="demo"><b>Demo data.</b> The print runs, turnaround, delivery, badges and templates below are placeholders that only show on your computer. They are not on the live site. Add real values in <code>src/data/productExtras.ts</code>.</p>}
+
       <div class="pdp">
         <div class="pdp__gallery">
-          <ProductImage slug={p.slug} name={p.name} ratio="4 / 5" eager sizes="(min-width: 900px) 50vw, 100vw" />
-          {extra > 0 && (
-            <div class="pdp__extras">
-              {Array.from({ length: Math.min(extra, 3) }, (_, i) => (
-                <ProductImage slug={p.slug} name={p.name} index={i + 1} ratio="1 / 1" sizes="(min-width: 900px) 16vw, 33vw" />
+          {Array.from({ length: imgCount }, (_, i) => (
+            <div class="pdp__main" data-main={i} hidden={i !== 0}>
+              <ProductImage slug={p.slug} name={p.name} index={i} ratio="1 / 1" eager={i === 0} sizes="(min-width: 900px) 50vw, 100vw" />
+            </div>
+          ))}
+          {imgCount > 1 && (
+            <div class="thumbs" role="group" aria-label="Product photos">
+              {Array.from({ length: imgCount }, (_, i) => (
+                <button type="button" class="thumb" data-thumb={i} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={`Show photo ${i + 1} of ${imgCount}`}>
+                  <ProductImage slug={p.slug} name={p.name} index={i} ratio="1 / 1" decorative sizes="80px" />
+                </button>
               ))}
             </div>
           )}
+          {ex.badges.length > 0 && <ul class="badges">{ex.badges.map((b) => <li>{b}</li>)}</ul>}
         </div>
 
         <div class="pdp__info">
-          <p class="pdp__cat">{p.category}</p>
+          <p class="pdp__cat"><a href={`/services?c=${p.categorySlug}`}>{p.category}</a></p>
           <h1>{p.name}</h1>
-          <p class:list={['pdp__price', { 'pdp__price--quote': isQuote }]}>{priceLabel(p)}</p>
+          <p class:list={['pdp__price', { 'pdp__price--quote': isQuote }]}>
+            {isQuote ? 'Request a quote' : <span data-kes={startKes}>KES {fmt(startKes!)}</span>}
+            {showStarting && <small> starting price</small>}
+          </p>
           <p class="pdp__desc">{p.description}</p>
 
           {p.specs.length > 0 && (
@@ -72,11 +100,6 @@ const ld = {
 
           <form class="enquiry" id="enquiry" novalidate data-wa-base={waBase} data-name={p.name} data-verb={verb}>
             <h2>Tell us what you need</h2>
-
-            <div class="field">
-              <label for="f-qty">Quantity</label>
-              <input id="f-qty" type="text" inputmode="numeric" placeholder="e.g. 500" data-label="Quantity" />
-            </div>
 
             {p.options.map((o) => (
               <div class="field">
@@ -93,14 +116,81 @@ const ld = {
               </div>
             ))}
 
+            {hasTiers ? (
+              <fieldset class="field opts">
+                <legend>Select print run</legend>
+                <div class="opts__grid">
+                  {tiersView.map((t) => (
+                    <label class="opt">
+                      <input type="radio" name="tier" value={t.label} data-price={t.price ?? ''} data-qty={t.qty ?? ''} />
+                      <span class="opt__body">
+                        <span class="opt__label">{t.label}</span>
+                        <span class="opt__price" data-kes={t.price ?? undefined}>{t.price !== null ? `KES ${fmt(t.price)}` : 'On request'}</span>
+                        {t.unit !== null && <span class="opt__unit" data-kes={t.unit} data-suffix=" / unit">KES {fmt(t.unit)} / unit</span>}
+                        {t.note && <span class="opt__note">{t.note}</span>}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ) : (
+              <div class="field">
+                <label for="f-qty">Quantity</label>
+                <input id="f-qty" type="text" inputmode="numeric" placeholder="e.g. 500" data-label="Quantity" />
+              </div>
+            )}
+
+            {ex.delivery.length > 0 && (
+              <details class="zones">
+                <summary>Delivery zones &amp; prices</summary>
+                <table>
+                  <thead><tr><th scope="col">Zone</th><th scope="col">Price</th></tr></thead>
+                  <tbody>{ex.delivery.map((z) => <tr><td>{z.zone}</td><td>{z.price}</td></tr>)}</tbody>
+                </table>
+              </details>
+            )}
+
+            {ex.turnaround.length > 0 && (
+              <fieldset class="field opts">
+                <legend>Select turnaround time</legend>
+                <div class="opts__grid opts__grid--3">
+                  {ex.turnaround.map((t) => (
+                    <label class="opt">
+                      <input type="radio" name="turn" value={t.label} data-extra={t.extra ?? ''} />
+                      <span class="opt__body">
+                        {t.badge && <span class="opt__badge">{t.badge}</span>}
+                        <span class="opt__label">{t.label}</span>
+                        <span class="opt__price" data-kes={t.extra ? t.extra : undefined} data-prefix={t.extra ? '+ ' : undefined}>{t.extra ? `+ KES ${fmt(t.extra)}` : 'No extra charge listed'}</span>
+                        {t.note && <span class="opt__note">{t.note}</span>}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+
+            <div class="field">
+              <label for="f-date">Delivery date <span class="opt-tag">(optional)</span></label>
+              <input id="f-date" type="date" data-label="Needed by" />
+              <span class="hint">Crosslink confirms whether the date is possible.</span>
+            </div>
+
+            <div class="upload">
+              <strong>Upload design <span class="opt-tag">(optional)</span></strong>
+              <p>Send your design file in the WhatsApp chat after it opens. No design yet? Tell us what you want on it.</p>
+            </div>
+
             <div class="field">
               <label for="f-notes">Special instructions</label>
               <textarea id="f-notes" data-label="Notes" placeholder="Size, colours, wording, deadline..."></textarea>
             </div>
 
-            <div class="art">
-              <strong>Artwork</strong>
-              <p>Have a design? Send the file in the WhatsApp chat after it opens. No design yet? Tell us what you want on it.</p>
+            <div class="psum" aria-live="polite">
+              <p class="psum__title">Pricing summary</p>
+              <div class="psum__row" id="row-run" hidden><span id="row-run-l"></span><span id="row-run-v"></span></div>
+              <div class="psum__row" id="row-turn" hidden><span id="row-turn-l"></span><span id="row-turn-v"></span></div>
+              {ex.vatNote && <div class="psum__row"><span>{ex.vatNote}</span><span></span></div>}
+              <div class="psum__total"><span>Total</span><strong id="sum-total">Confirmed on WhatsApp</strong></div>
             </div>
 
             <div class="preview">
@@ -112,40 +202,106 @@ const ld = {
               <a class="btn" id="wa-link" href={waLink(defaultMsg)} target="_blank" rel="noopener noreferrer">{isQuote ? 'Request a quote on WhatsApp' : 'Order on WhatsApp'} <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
               <a class="btn btn--ghost" href={`tel:${phone.tel}`}>Call {phone.display}</a>
             </div>
+
+            {ex.templates.length > 0 && (
+              <p class="templates">
+                <span>Download templates:</span>
+                {ex.templates.map((t) => <a href={t.href} download>{t.label}</a>)}
+              </p>
+            )}
           </form>
-
-          <ol class="steps">
-            <li><b>01</b>Choose your product and tell us what you need.</li>
-            <li><b>02</b>Send the message on WhatsApp, with your design if you have one.</li>
-            <li><b>03</b>Crosslink replies to confirm the details and the price.</li>
-          </ol>
-
-          {p.faqs.length > 0 && (
-            <div class="faq">{p.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}</div>
-          )}
         </div>
       </div>
 
-      {related.length > 0 && (
-        <section class="related" aria-labelledby="related-h">
-          <h2 class="hd hd--m" id="related-h">More in {p.category}</h2>
-          <ul class="pgrid">{related.map((r) => <ProductCard product={r} />)}</ul>
-        </section>
-      )}
+      <div class="pdp__more">
+        <div>
+          <h2 class="hd hd--m">{ex.intro ? ex.intro.title : `About ${p.name}`}</h2>
+          {ex.intro && <p class="intro">{ex.intro.body}</p>}
+          <div class="acc">
+            {ex.info.map((b) => <details><summary>{b.title}</summary><p>{b.body}</p></details>)}
+            <details open={ex.info.length === 0}>
+              <summary>How ordering works</summary>
+              <ol class="steps steps--plain">
+                <li><b>01</b>Choose your product and tell us what you need.</li>
+                <li><b>02</b>Send the message on WhatsApp, with your design if you have one.</li>
+                <li><b>03</b>Crosslink replies to confirm the details and the price.</li>
+              </ol>
+            </details>
+          </div>
+        </div>
+
+        {related.length > 0 && (
+          <aside aria-labelledby="explore-h">
+            <h2 class="explore__title" id="explore-h">Explore more printing services</h2>
+            <ul class="explore">
+              {related.map((r) => (
+                <li>
+                  <a class="xrow" href={`/services/${r.slug}`}>
+                    <span class="xrow__img"><ProductImage slug={r.slug} name={r.name} ratio="1 / 1" decorative sizes="96px" /></span>
+                    <span class="xrow__txt">
+                      <b>{r.name}</b>
+                      <span data-kes={r.startingPrice ?? undefined} data-prefix={r.startingPrice !== null && r.priceType === 'from' ? 'From ' : undefined}>{priceLabel(r)}</span>
+                      <span class="xrow__cta">Order now &rarr;</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+      </div>
+
+      <section class="faqs" aria-labelledby="faq-h">
+        <h2 class="hd hd--m" id="faq-h">Frequently asked questions</h2>
+        <div class="faqgrid">
+          {faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+        </div>
+      </section>
     </div>
   </section>
   <Footer slot="footer" />
 </BaseLayout>
 
 <script>
+  import { applyCurrency, money } from '../../scripts/currency';
+
+  // Photo gallery: show the chosen photo
+  const mains = Array.from(document.querySelectorAll<HTMLElement>('[data-main]'));
+  const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-thumb]'));
+  thumbs.forEach((t) =>
+    t.addEventListener('click', () => {
+      const i = t.dataset.thumb;
+      mains.forEach((m) => (m.hidden = m.dataset.main !== i));
+      thumbs.forEach((x) => x.setAttribute('aria-pressed', String(x === t)));
+    })
+  );
+
+  // Enquiry form: builds the WhatsApp message (always in KES) and the on-screen estimate
   const form = document.getElementById('enquiry') as HTMLFormElement | null;
   const link = document.getElementById('wa-link') as HTMLAnchorElement | null;
   const out = document.getElementById('wa-preview');
+  const totalEl = document.getElementById('sum-total');
+  const rowRun = document.getElementById('row-run');
+  const rowTurn = document.getElementById('row-turn');
+  const rowRunL = document.getElementById('row-run-l');
+  const rowRunV = document.getElementById('row-run-v');
+  const rowTurnL = document.getElementById('row-turn-l');
+  const rowTurnV = document.getElementById('row-turn-v');
+
   if (form && link && out) {
     const base = form.dataset.waBase || '';
     const name = form.dataset.name || '';
     const verb = form.dataset.verb || 'enquire about';
     const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[data-label]'));
+    const kes = (n: number) => 'KES ' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    const setRow = (row: HTMLElement | null, l: HTMLElement | null, v: HTMLElement | null, label: string, amount: number | null) => {
+      if (!row || !l || !v) return;
+      row.hidden = false;
+      l.textContent = label;
+      if (amount !== null) { v.dataset.kes = String(amount); v.textContent = money(amount); }
+      else { delete v.dataset.kes; v.textContent = 'On request'; }
+    };
 
     const update = () => {
       const lines = [`Hello Crosslink Printers, I would like to ${verb} ${name}.`];
@@ -153,15 +309,43 @@ const ld = {
         const v = f.value.trim();
         if (v) lines.push(`${f.dataset.label}: ${v}.`);
       }
+
+      let total: number | null = null;
+      if (rowRun) rowRun.hidden = true;
+      if (rowTurn) rowTurn.hidden = true;
+
+      const tier = form.querySelector<HTMLInputElement>('input[name="tier"]:checked');
+      if (tier) {
+        const pr = tier.dataset.price ? Number(tier.dataset.price) : null;
+        lines.push(`Print run: ${tier.value}${pr !== null ? ` (${kes(pr)})` : ''}.`);
+        setRow(rowRun, rowRunL, rowRunV, tier.value, pr);
+        if (pr !== null) total = pr;
+      }
+      const turn = form.querySelector<HTMLInputElement>('input[name="turn"]:checked');
+      if (turn) {
+        const extra = turn.dataset.extra ? Number(turn.dataset.extra) : 0;
+        lines.push(`Turnaround: ${turn.value}.`);
+        setRow(rowTurn, rowTurnL, rowTurnV, 'Turnaround: ' + turn.value, extra || 0);
+        if (total !== null) total += extra;
+      }
+      if (total !== null) lines.push(`Estimated total: ${kes(total)}.`);
       lines.push('I found this product on your website.');
+
       const msg = lines.join('\n');
       link.href = `${base}?text=${encodeURIComponent(msg)}`;
       out.textContent = msg;
+
+      if (totalEl) {
+        if (total !== null) { totalEl.dataset.kes = String(total); totalEl.textContent = money(total); }
+        else { delete totalEl.dataset.kes; totalEl.textContent = 'Confirmed on WhatsApp'; }
+      }
+      applyCurrency();
     };
 
     form.addEventListener('input', update);
     form.addEventListener('change', update);
     form.addEventListener('submit', (e) => e.preventDefault());
+    document.addEventListener('currencychange', update);
     update();
   }
 </script>
