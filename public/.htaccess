@@ -1,0 +1,17 @@
+# Crosslink Printers on Apache (TrueHost / cPanel)
+ErrorDocument 404 /404.html
+
+# Force HTTPS. Turn this on only after the SSL certificate is active on the domain.
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+  <FilesMatch "\.(avif|webp|jpg|jpeg|png|svg|css|js|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
