@@ -1,0 +1,19 @@
+---
+interface Props { hasPrices: boolean; }
+const { hasPrices } = Astro.props;
+---
+<form class="cfilters" role="search" id="catalogue-form" novalidate>
+  <div class="field field--search">
+    <label for="product-search" class="visually-hidden">Search products</label>
+    <input id="product-search" type="search" placeholder="Search products..." autocomplete="off" />
+  </div>
+  <div class="field field--sort">
+    <label for="product-sort">Sort</label>
+    <select id="product-sort">
+      <option value="featured">Featured</option>
+      <option value="name">Name</option>
+      {hasPrices && <option value="price-asc">Price: Low to High</option>}
+      {hasPrices && <option value="price-desc">Price: High to Low</option>}
+    </select>
+  </div>
+</form>

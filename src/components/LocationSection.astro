@@ -1,0 +1,23 @@
+---
+import { site, mapsLink } from '../data/site';
+import Media from './Media.astro';
+const phone = site.phones[0];
+---
+<section class="section on-ink" id="visit">
+  <div class="container loc">
+    <div>
+      <p class="eyebrow">Find Crosslink</p>
+      <h2 class="hd hd--xl">Right in<br />Nkubu.</h2>
+      <address class="address-block">
+        <span>Along Mt Kenya University Street</span>
+        <span>Opposite Rezama Chemist</span>
+        <span>Nkubu, Kenya</span>
+      </address>
+      <div class="cta-row">
+        <a class="btn" href={mapsLink()} target="_blank" rel="noopener noreferrer">Get directions <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="btn btn--ghost" href={`tel:${phone.tel}`}>Call {phone.display}</a>
+      </div>
+    </div>
+    <div class="zoom"><Media name="storefront" ratio="4 / 5" dark sizes="(min-width: 900px) 40vw, 100vw" /></div>
+  </div>
+</section>

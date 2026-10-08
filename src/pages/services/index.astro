@@ -1,0 +1,125 @@
+---
+import '../../styles/catalogue.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PageHero from '../../components/PageHero.astro';
+import CategorySidebar from '../../components/CategorySidebar.astro';
+import ProductFilters from '../../components/ProductFilters.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { products, categoriesWithCounts, hasPrices } from '../../data/products';
+import { waLink } from '../../data/site';
+
+const names = Object.fromEntries(categoriesWithCounts.map((c) => [c.slug, c.name]));
+const lost = waLink('Hello Crosslink Printers, I could not find what I need on your website. Can you help?');
+---
+<BaseLayout title="Printing Products and Services in Nkubu | Crosslink Printers" description="Browse printing products from Crosslink Printers in Nkubu: business cards, receipt books, flyers, posters, banners, wedding cards, stickers, photos, documents and more." path="/services">
+  <Header slot="header" />
+  <PageHero eyebrow="Services" title="All printing<br />products." lead="Browse by category, search, then message us about the product you want." />
+  <section class="section">
+    <div class="container catalogue__wrap">
+      <CategorySidebar cats={categoriesWithCounts} total={products.length} />
+      <div class="catalogue__main">
+        <ProductFilters hasPrices={hasPrices} />
+        <h2 class="hd hd--m" id="catalogue-title">All products</h2>
+        <p class="filter-status" id="catalogue-status" role="status" aria-live="polite">{products.length} products</p>
+        <ul class="pgrid" id="product-grid" data-cats={JSON.stringify(names)}>
+          {products.map((p) => <ProductCard product={p} />)}
+        </ul>
+        <div class="empty" id="catalogue-empty" hidden>
+          <h3>No matching products.</h3>
+          <p>Try another word, or tell us what you need.</p>
+          <div class="cta-row"><a class="btn" href={lost} target="_blank" rel="noopener noreferrer">Ask on WhatsApp <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a></div>
+        </div>
+        <div class="cantfind">
+          <h2>Can&rsquo;t find it?</h2>
+          <p>Tell us what you need and we will tell you if we can print it.</p>
+          <div class="cta-row"><a class="btn" href={lost} target="_blank" rel="noopener noreferrer">Ask on WhatsApp <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const grid = document.getElementById('product-grid');
+  const search = document.getElementById('product-search') as HTMLInputElement | null;
+  const sort = document.getElementById('product-sort') as HTMLSelectElement | null;
+  const form = document.getElementById('catalogue-form');
+  const status = document.getElementById('catalogue-status');
+  const title = document.getElementById('catalogue-title');
+  const empty = document.getElementById('catalogue-empty');
+
+  if (grid && search && sort) {
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('.pcard'));
+    const names: Record<string, string> = JSON.parse(grid.dataset.cats || '{}');
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-cat-link]'));
+
+    // Old links such as /services#photocopying (used on Home) jump to that product's page.
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash && cards.some((c) => c.dataset.slug === hash)) {
+      location.replace('/services/' + hash);
+    }
+
+    const params = new URLSearchParams(location.search);
+    let cat = params.get('c') && names[params.get('c')!] ? params.get('c')! : 'all';
+    search.value = params.get('q') || '';
+
+    const num = (v?: string) => (v ? Number(v) : null);
+
+    function apply() {
+      const terms = search!.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let shown = 0;
+      for (const c of cards) {
+        const okCat = cat === 'all' || c.dataset.cat === cat;
+        const hay = c.dataset.search || '';
+        const okText = terms.every((t) => hay.includes(t));
+        c.hidden = !(okCat && okText);
+        if (!c.hidden) shown++;
+      }
+
+      const mode = sort!.value;
+      const sorted = [...cards].sort((a, b) => {
+        if (mode === 'name') return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+        if (mode === 'price-asc' || mode === 'price-desc') {
+          const pa = num(a.dataset.price), pb = num(b.dataset.price);
+          if (pa === null && pb === null) return 0;
+          if (pa === null) return 1;
+          if (pb === null) return -1;
+          return mode === 'price-asc' ? pa - pb : pb - pa;
+        }
+        return Number(a.dataset.rank) - Number(b.dataset.rank) || Number(a.dataset.order) - Number(b.dataset.order);
+      });
+      grid!.append(...sorted);
+
+      for (const l of links) {
+        if (l.dataset.catLink === cat) l.setAttribute('aria-current', 'true');
+        else l.removeAttribute('aria-current');
+      }
+      if (title) title.textContent = cat === 'all' ? 'All products' : names[cat];
+      if (status) status.textContent = `${shown} ${shown === 1 ? 'product' : 'products'}`;
+      if (empty) empty.hidden = shown !== 0;
+
+      const url = new URL(location.href);
+      if (cat === 'all') url.searchParams.delete('c'); else url.searchParams.set('c', cat);
+      const q = search!.value.trim();
+      if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+    }
+
+    for (const l of links) {
+      l.addEventListener('click', (e) => {
+        e.preventDefault();
+        cat = l.dataset.catLink || 'all';
+        apply();
+        if (l.closest('.chips')) l.scrollIntoView({ inline: 'center', block: 'nearest' });
+      });
+    }
+    search.addEventListener('input', apply);
+    sort.addEventListener('change', apply);
+    form?.addEventListener('submit', (e) => e.preventDefault());
+    apply();
+    document.querySelector<HTMLElement>('.chips [aria-current="true"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+</script>

@@ -1,0 +1,39 @@
+---
+import Media from './Media.astro';
+
+// Justified rows: each item's width is proportional to its aspect ratio, so every row has equal height.
+const rows = [
+  [
+    { k: 'work-1', r: 0.8, ar: '4 / 5', label: 'Business' },
+    { k: 'work-2', r: 1.5, ar: '3 / 2', label: 'Events' },
+  ],
+  [
+    { k: 'work-3', r: 1, ar: '1 / 1', label: 'Business' },
+    { k: 'work-4', r: 1.78, ar: '16 / 9', label: 'Promotional' },
+  ],
+  [
+    { k: 'work-5', r: 0.8, ar: '4 / 5', label: 'Promotional' },
+    { k: 'work-6', r: 1.2, ar: '6 / 5', label: 'Documents' },
+    { k: 'work-7', r: 0.75, ar: '3 / 4', label: 'Photos' },
+  ],
+];
+---
+<section class="section work">
+  <div class="container">
+    <p class="eyebrow">Our work</p>
+    <h2 class="hd hd--l">See what<br />we print.</h2>
+    <div class="work__rows" data-reveal>
+      {rows.map((row) => (
+        <div class="jrow">
+          {row.map((it) => (
+            <figure class="zoom" style={`--r:${it.r}`}>
+              <Media name={it.k as any} ratio={it.ar} sizes="(min-width: 900px) 40vw, 60vw" />
+              <figcaption class="tag">{it.label}</figcaption>
+            </figure>
+          ))}
+        </div>
+      ))}
+    </div>
+    <div class="cta-row"><a class="btn" href="/our-work">View all our work <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+  </div>
+</section>

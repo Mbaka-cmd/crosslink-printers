@@ -1,0 +1,33 @@
+---
+import Media from './Media.astro';
+
+// d = grid-area on desktop: row-start / col-start / row-end / col-end (12 columns)
+// w, h = width and height in the mobile horizontal strip
+const items = [
+  { key: 'receipt-book', label: '01 / Business', d: '1 / 1 / 5 / 6', w: '82vw', h: '22rem', cls: '' },
+  { key: 'invitation', label: '02 / Events', d: '1 / 9 / 3 / 13', w: '68vw', h: '19rem', cls: '' },
+  { key: 'sticker', label: '03 / Branding', d: '3 / 6 / 5 / 8', w: '42vw', h: '11rem', cls: 'wall__item--sticker' },
+  { key: 'document', label: '04 / Documents', d: '5 / 10 / 7 / 13', w: '62vw', h: '14rem', cls: '' },
+  { key: 'business-card', label: '05 / Business', d: '1 / 6 / 3 / 9', w: '54vw', h: '13rem', cls: '' },
+  { key: 'poster', label: '06 / Promotion', d: '5 / 4 / 7 / 8', w: '74vw', h: '17rem', cls: '' },
+  { key: 'calendar', label: '07 / Promotion', d: '3 / 8 / 7 / 10', w: '50vw', h: '21rem', cls: '' },
+  { key: 'passport-photo', label: '08 / Photos', d: '3 / 10 / 5 / 13', w: '46vw', h: '15rem', cls: '' },
+];
+---
+<section class="section section--rule wallsec">
+  <div class="container">
+    <div class="wall-head" data-reveal>
+      <p class="eyebrow">What leaves the shop</p>
+      <h2 class="hd hd--xl">Paper.<br />Print.<br />Purpose.</h2>
+    </div>
+    <div class="wall" role="region" aria-label="Examples of printed work. Scroll sideways on small screens." tabindex="0">
+      {items.map((it) => (
+        <figure class:list={['wall__item', 'zoom', it.cls]} style={`--w:${it.w};--h:${it.h};--d:${it.d}`}>
+          <Media name={it.key as any} ratio="fill" sizes="(min-width: 900px) 40vw, 80vw" />
+          <figcaption class="tag">{it.label}</figcaption>
+        </figure>
+      ))}
+      <div class="wall__item wall__tile" style="--w:60vw;--h:12rem;--d:5 / 1 / 7 / 4">Printed in<br />Nkubu.</div>
+    </div>
+  </div>
+</section>

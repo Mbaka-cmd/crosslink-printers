@@ -1,0 +1,22 @@
+---
+import { waLink, messages } from '../data/site';
+import Media from './Media.astro';
+---
+<section class="events on-ink">
+  <div class="container" data-reveal>
+    <p class="eyebrow">Events</p>
+    <h2 class="hd hd--xl">Some days<br />deserve<br />paper.</h2>
+  </div>
+  <div class="events__photo zoom">
+    <Media name="event-main" ratio="fill" dark sizes="100vw" />
+  </div>
+  <div class="container events__foot">
+    <div class="events__detail zoom">
+      <Media name="event-detail" ratio="3 / 4" dark sizes="(min-width: 900px) 30vw, 55vw" />
+    </div>
+    <div class="events__copy">
+      <p class="lead">Wedding invitations, celebration cards, event materials and photographs for occasions worth remembering.</p>
+      <div class="cta-row"><a class="btn" href={waLink(messages.event)} target="_blank" rel="noopener noreferrer">Talk about your event <span class="arrow" aria-hidden="true">&rarr;</span><span class="visually-hidden"> (opens in a new tab)</span></a></div>
+    </div>
+  </div>
+</section>

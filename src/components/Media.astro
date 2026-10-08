@@ -1,0 +1,48 @@
+---
+import { Picture } from 'astro:assets';
+import { images, getImage, type ImageKey, type ImageDef } from '../data/images';
+
+interface Props {
+  name: ImageKey;
+  ratio?: string;      // e.g. '4 / 5'. Use 'fill' to fill a parent that has its own height
+  sizes?: string;
+  eager?: boolean;     // true only for the hero image
+  decorative?: boolean;
+  dark?: boolean;
+  position?: string;
+  class?: string;
+}
+const {
+  name, ratio = '4 / 3', sizes = '(min-width: 900px) 50vw, 100vw',
+  eager = false, decorative = false, dark = false, position, class: className,
+} = Astro.props;
+
+const def: ImageDef = images[name];
+const img = getImage(name);
+const pos = position ?? def.position ?? '50% 50%';
+const style = ratio === 'fill' ? undefined : `aspect-ratio:${ratio}`;
+---
+<div
+  class:list={['media', { 'media--fill': ratio === 'fill', 'media--dark': dark }, className]}
+  style={style}
+  aria-hidden={decorative ? 'true' : undefined}
+>
+  {img ? (
+    <Picture
+      src={img}
+      alt={decorative ? '' : def.alt}
+      formats={['avif', 'webp']}
+      widths={[480, 800, 1200, 1800]}
+      sizes={sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding={eager ? 'sync' : 'async'}
+      fetchpriority={eager ? 'high' : undefined}
+      style={`object-position:${pos}`}
+    />
+  ) : (
+    <div class="media__ph" role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : `${def.alt} (photo to be added)`}>
+      <span class="media__ph-label">{def.label}</span>
+      {import.meta.env.DEV && <small>src/assets/work/{name}.jpg</small>}
+    </div>
+  )}
+</div>

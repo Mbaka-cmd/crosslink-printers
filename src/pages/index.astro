@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import PrintWall from '../components/PrintWall.astro';
+import Journeys from '../components/Journeys.astro';
+import BusinessFeature from '../components/BusinessFeature.astro';
+import EventsStory from '../components/EventsStory.astro';
+import Counter from '../components/Counter.astro';
+import WorkPreview from '../components/WorkPreview.astro';
+import LocationSection from '../components/LocationSection.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import { site } from '../data/site';
+
+// Only facts the client has confirmed. Add url, openingHours and geo once they are known.
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name,
+  description: site.positioning,
+  telephone: site.phones.map((p) => p.tel),
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Mt Kenya University Street, opposite Rezama Chemist',
+    addressLocality: 'Nkubu',
+    addressCountry: 'KE',
+  },
+};
+---
+<BaseLayout title="Printing Services in Nkubu | Crosslink Printers" description="Professional printing and digital services in Nkubu: receipt books, business cards, invitations, posters, stickers, documents, photocopying and passport photos." path="/">
+  <Header slot="header" />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(ld)} />
+  <Hero />
+  <PrintWall />
+  <Journeys />
+  <BusinessFeature />
+  <EventsStory />
+  <Counter />
+  <WorkPreview />
+  <LocationSection />
+  <FinalCTA />
+  <Footer slot="footer" />
+</BaseLayout>

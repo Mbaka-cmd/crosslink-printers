@@ -1,0 +1,13 @@
+---
+import { site, waLink } from '../data/site';
+const phone = site.phones[0];
+---
+<section class="yellow final">
+  <div class="container">
+    <h2 class="hd hd--xl">Have something<br />to print?</h2>
+    <div class="cta-row">
+      <a class="btn" href={waLink()} target="_blank" rel="noopener noreferrer">WhatsApp {site.whatsapp.display} <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="btn btn--ghost" href={`tel:${phone.tel}`}>Call {phone.display}</a>
+    </div>
+  </div>
+</section>

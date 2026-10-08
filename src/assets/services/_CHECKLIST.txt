@@ -1,0 +1,107 @@
+Main photo: <slug>.jpg. Extra photos for the product page: <slug>-2.jpg, <slug>-3.jpg.
+
+Business Cards  ->  src/assets/services/business-cards/business-cards.jpg
+Letterheads  ->  src/assets/services/letterheads/letterheads.jpg
+Envelopes  ->  src/assets/services/envelopes/envelopes.jpg
+Receipt Books  ->  src/assets/services/receipt-books/receipt-books.jpg
+Presentation Folders  ->  src/assets/services/presentation-folders/presentation-folders.jpg
+Certificates  ->  src/assets/services/certificates/certificates.jpg
+Corporate Stationery  ->  src/assets/services/corporate-stationery/corporate-stationery.jpg
+Gift Vouchers  ->  src/assets/services/gift-vouchers/gift-vouchers.jpg
+Bookmarks  ->  src/assets/services/bookmarks/bookmarks.jpg
+Postcards  ->  src/assets/services/postcards/postcards.jpg
+Flyers  ->  src/assets/services/flyers/flyers.jpg
+Posters  ->  src/assets/services/posters/posters.jpg
+Brochures  ->  src/assets/services/brochures/brochures.jpg
+Menus  ->  src/assets/services/menus/menus.jpg
+Programmes  ->  src/assets/services/programmes/programmes.jpg
+X-Banners  ->  src/assets/services/x-banners/x-banners.jpg
+Roll-Up Banners  ->  src/assets/services/roll-up-banners/roll-up-banners.jpg
+L-Banners  ->  src/assets/services/l-banners/l-banners.jpg
+Backdrops  ->  src/assets/services/backdrops/backdrops.jpg
+Media Walls  ->  src/assets/services/media-walls/media-walls.jpg
+Vinyl Banners  ->  src/assets/services/vinyl-banners/vinyl-banners.jpg
+Large Format Printing  ->  src/assets/services/large-format-printing/large-format-printing.jpg
+Wheel Cover Printing  ->  src/assets/services/wheel-cover-printing/wheel-cover-printing.jpg
+Other Large Format Materials  ->  src/assets/services/other-large-format-materials/other-large-format-materials.jpg
+Wedding Cards  ->  src/assets/services/wedding-cards/wedding-cards.jpg
+Invitation Cards  ->  src/assets/services/invitation-cards/invitation-cards.jpg
+Funeral Programmes  ->  src/assets/services/funeral-programmes/funeral-programmes.jpg
+Event Programmes  ->  src/assets/services/event-programmes/event-programmes.jpg
+New Baby Cards  ->  src/assets/services/new-baby-cards/new-baby-cards.jpg
+Name Tags  ->  src/assets/services/name-tags/name-tags.jpg
+Tent Cards  ->  src/assets/services/tent-cards/tent-cards.jpg
+Table Materials  ->  src/assets/services/table-materials/table-materials.jpg
+Event Display Materials  ->  src/assets/services/event-display-materials/event-display-materials.jpg
+Branded T-Shirts  ->  src/assets/services/branded-t-shirts/branded-t-shirts.jpg
+Polo Shirts  ->  src/assets/services/polo-shirts/polo-shirts.jpg
+Hoodies  ->  src/assets/services/hoodies/hoodies.jpg
+Jerseys  ->  src/assets/services/jerseys/jerseys.jpg
+Caps  ->  src/assets/services/caps/caps.jpg
+Aprons  ->  src/assets/services/aprons/aprons.jpg
+Reflector Jackets  ->  src/assets/services/reflector-jackets/reflector-jackets.jpg
+Other Wearable Branding  ->  src/assets/services/other-wearable-branding/other-wearable-branding.jpg
+Stickers  ->  src/assets/services/stickers/stickers.jpg
+Product Labels  ->  src/assets/services/product-labels/product-labels.jpg
+Vinyl Stickers  ->  src/assets/services/vinyl-stickers/vinyl-stickers.jpg
+Reflective Stickers  ->  src/assets/services/reflective-stickers/reflective-stickers.jpg
+Floor Stickers  ->  src/assets/services/floor-stickers/floor-stickers.jpg
+Car Stickers  ->  src/assets/services/car-stickers/car-stickers.jpg
+Bike Stickers  ->  src/assets/services/bike-stickers/bike-stickers.jpg
+Custom Labels  ->  src/assets/services/custom-labels/custom-labels.jpg
+Door Signs  ->  src/assets/services/door-signs/door-signs.jpg
+Door Plates  ->  src/assets/services/door-plates/door-plates.jpg
+Rigid Signs  ->  src/assets/services/rigid-signs/rigid-signs.jpg
+3D Signs  ->  src/assets/services/3d-signs/3d-signs.jpg
+Printed Signs  ->  src/assets/services/printed-signs/printed-signs.jpg
+Business Signage  ->  src/assets/services/business-signage/business-signage.jpg
+Custom Signage  ->  src/assets/services/custom-signage/custom-signage.jpg
+Branded Pens  ->  src/assets/services/branded-pens/branded-pens.jpg
+Keyholders  ->  src/assets/services/keyholders/keyholders.jpg
+Mousepads  ->  src/assets/services/mousepads/mousepads.jpg
+Tote Bags  ->  src/assets/services/tote-bags/tote-bags.jpg
+Drawstring Bags  ->  src/assets/services/drawstring-bags/drawstring-bags.jpg
+Umbrellas  ->  src/assets/services/umbrellas/umbrellas.jpg
+Promotional Merchandise  ->  src/assets/services/promotional-merchandise/promotional-merchandise.jpg
+Branded Mugs  ->  src/assets/services/branded-mugs/branded-mugs.jpg
+Enamel Mugs  ->  src/assets/services/enamel-mugs/enamel-mugs.jpg
+Thermal Mugs  ->  src/assets/services/thermal-mugs/thermal-mugs.jpg
+Flasks  ->  src/assets/services/flasks/flasks.jpg
+Water Bottles  ->  src/assets/services/water-bottles/water-bottles.jpg
+Other Branded Drinkware  ->  src/assets/services/other-branded-drinkware/other-branded-drinkware.jpg
+Kraft Bags  ->  src/assets/services/kraft-bags/kraft-bags.jpg
+Jute Bags  ->  src/assets/services/jute-bags/jute-bags.jpg
+Branded Bags  ->  src/assets/services/branded-bags/branded-bags.jpg
+Packaging Boxes  ->  src/assets/services/packaging-boxes/packaging-boxes.jpg
+Product Packaging  ->  src/assets/services/product-packaging/product-packaging.jpg
+Photo Printing  ->  src/assets/services/photo-printing/photo-printing.jpg
+Passport Photos  ->  src/assets/services/passport-photos/passport-photos.jpg
+Mounted Photos  ->  src/assets/services/mounted-photos/mounted-photos.jpg
+Photo Framing  ->  src/assets/services/photo-framing/photo-framing.jpg
+Canvas Printing  ->  src/assets/services/canvas-printing/canvas-printing.jpg
+Book Printing  ->  src/assets/services/book-printing/book-printing.jpg
+Booklets  ->  src/assets/services/booklets/booklets.jpg
+Magazines  ->  src/assets/services/magazines/magazines.jpg
+Catalogues  ->  src/assets/services/catalogues/catalogues.jpg
+Spiral Binding  ->  src/assets/services/spiral-binding/spiral-binding.jpg
+Binding & Finishing  ->  src/assets/services/binding-finishing/binding-finishing.jpg
+Calendars  ->  src/assets/services/calendars/calendars.jpg
+Diaries  ->  src/assets/services/diaries/diaries.jpg
+Notebooks  ->  src/assets/services/notebooks/notebooks.jpg
+Planners  ->  src/assets/services/planners/planners.jpg
+Custom Stationery  ->  src/assets/services/custom-stationery/custom-stationery.jpg
+Document Printing  ->  src/assets/services/document-printing/document-printing.jpg
+Photocopying  ->  src/assets/services/photocopying/photocopying.jpg
+Typesetting  ->  src/assets/services/typesetting/typesetting.jpg
+Scanning  ->  src/assets/services/scanning/scanning.jpg
+Binding  ->  src/assets/services/binding/binding.jpg
+Lamination  ->  src/assets/services/lamination/lamination.jpg
+Computer Services  ->  src/assets/services/computer-services/computer-services.jpg
+Cyber Services  ->  src/assets/services/cyber-services/cyber-services.jpg
+Logo Design  ->  src/assets/services/logo-design/logo-design.jpg
+Business Material Design  ->  src/assets/services/business-material-design/business-material-design.jpg
+Poster Design  ->  src/assets/services/poster-design/poster-design.jpg
+Flyer Design  ->  src/assets/services/flyer-design/flyer-design.jpg
+Invitation Design  ->  src/assets/services/invitation-design/invitation-design.jpg
+Social Media Graphics  ->  src/assets/services/social-media-graphics/social-media-graphics.jpg
+Other Graphic Design Services  ->  src/assets/services/other-graphic-design-services/other-graphic-design-services.jpg

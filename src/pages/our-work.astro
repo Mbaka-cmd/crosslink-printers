@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Media from '../components/Media.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import { workItems } from '../data/work';
+import { images } from '../data/images';
+
+const cats = ['all', 'business', 'events', 'promotional', 'documents', 'photos'];
+---
+<BaseLayout title="Our Work | Crosslink Printers Nkubu" description="A selection of printing work from Crosslink Printers, Nkubu: business printing, event cards, promotional materials, documents and photos." path="/our-work">
+  <Header slot="header" />
+  <PageHero eyebrow="Gallery" title="Our work" />
+  <section class="section">
+    <div class="container">
+      <div class="filters" id="filters" role="group" aria-label="Filter work by category" hidden>
+        {cats.map((c) => <button type="button" data-filter={c} aria-pressed={c === 'all' ? 'true' : 'false'}>{c}</button>)}
+      </div>
+      <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+      <div class="masonry">
+        {workItems.map((w) => (
+          <figure data-cat={w.cat}>
+            <Media name={w.key as any} ratio={w.ar} sizes="(min-width: 1000px) 30vw, (min-width: 640px) 45vw, 100vw" />
+            <figcaption class="cap">{(images[w.key as keyof typeof images] as any).label} / {w.cat}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+  <FinalCTA />
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const bar = document.getElementById('filters');
+  const status = document.getElementById('filter-status');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-cat]'));
+  if (bar && items.length) {
+    bar.hidden = false;
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+    const apply = (f: string) => {
+      let n = 0;
+      for (const it of items) {
+        const show = f === 'all' || it.dataset.cat === f;
+        it.hidden = !show;
+        if (show) n++;
+      }
+      for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.filter === f));
+      if (status) status.textContent = `Showing ${n} ${n === 1 ? 'item' : 'items'}`;
+    };
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter || 'all')));
+  }
+</script>

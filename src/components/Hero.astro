@@ -1,0 +1,25 @@
+---
+import { site, waLink, messages } from '../data/site';
+import Media from './Media.astro';
+---
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">Printing / Documents / Digital</p>
+      <h1>We print<br />what matters.</h1>
+      <p class="lead">Professional printing and digital services in Nkubu, from business materials and receipt books to invitations, posters, stickers, documents and photographs.</p>
+      <div class="cta-row">
+        <a class="btn" href={waLink(messages.quote)} target="_blank" rel="noopener noreferrer">Start a print job <span class="arrow" aria-hidden="true">&rarr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="btn btn--ghost" href={waLink()} target="_blank" rel="noopener noreferrer">WhatsApp {site.whatsapp.display} <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </div>
+      <p class="hero__loc">Mt Kenya University Street &middot; Opposite Rezama Chemist &middot; Nkubu</p>
+    </div>
+    <div class="hero__art">
+      <Media name="hero" ratio="4 / 5" eager sizes="(min-width: 900px) 45vw, 100vw" />
+      <span class="tag">01 / Print</span>
+      <div class="hero__inset">
+        <Media name="hero-detail" ratio="1 / 1" sizes="(min-width: 900px) 18vw, 40vw" />
+      </div>
+    </div>
+  </div>
+</section>

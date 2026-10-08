@@ -1,0 +1,25 @@
+---
+import { site } from '../data/site';
+import { counter } from '../data/counter';
+import Media from './Media.astro';
+const phone = site.phones[0];
+---
+<section class="section yellow counter">
+  <div class="container">
+    <p class="eyebrow">The everyday counter</p>
+    <h2 class="hd hd--l">Quick job?<br />We&rsquo;ve got it.</h2>
+    <ol class="rows" data-reveal>
+      {counter.map((c, i) => (
+        <li>
+          <a class="row" href={`/services#${c.slug}`}>
+            <span class="row__n">{String(i + 1).padStart(2, '0')}</span>
+            <span class="row__name">{c.name}</span>
+            <span class="row__arrow" aria-hidden="true">&rarr;</span>
+            <span class="row__thumb" aria-hidden="true"><Media name={c.image as any} ratio="4 / 3" decorative sizes="200px" /></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+    <div class="cta-row"><a class="btn" href={`tel:${phone.tel}`}>Call {phone.display}</a></div>
+  </div>
+</section>

@@ -1,0 +1,167 @@
+---
+import '../../styles/catalogue.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductImage from '../../components/ProductImage.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { products, priceLabel, relatedProducts } from '../../data/products';
+import type { Product } from '../../data/products';
+import { getProductImages } from '../../data/productImages';
+import { site, waLink } from '../../data/site';
+
+// Runs once at build time: one page is generated for every product.
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props as { product: Product };
+const p = product;
+const isQuote = p.startingPrice === null;
+const verb = isQuote ? 'request a quote for' : 'enquire about';
+const defaultMsg = `Hello Crosslink Printers, I would like to ${verb} ${p.name}.\nI found this product on your website.`;
+const waBase = waLink().split('?')[0];
+const phone = site.phones[0];
+const extra = getProductImages(p.slug).length - 1;
+const related = relatedProducts(p);
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: p.name,
+  description: p.description,
+  category: p.category,
+  brand: { '@type': 'Brand', name: site.name },
+};
+---
+<BaseLayout title={`${p.name} Printing in Nkubu | Crosslink Printers`} description={`${p.description} Enquire about ${p.name} at Crosslink Printers, Nkubu.`} path={`/services/${p.slug}`}>
+  <Header slot="header" />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(ld)} />
+  <section class="section">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href={`/services?c=${p.categorySlug}`}>{p.category}</a></li>
+          <li><span aria-current="page">{p.name}</span></li>
+        </ol>
+      </nav>
+
+      <div class="pdp">
+        <div class="pdp__gallery">
+          <ProductImage slug={p.slug} name={p.name} ratio="4 / 5" eager sizes="(min-width: 900px) 50vw, 100vw" />
+          {extra > 0 && (
+            <div class="pdp__extras">
+              {Array.from({ length: Math.min(extra, 3) }, (_, i) => (
+                <ProductImage slug={p.slug} name={p.name} index={i + 1} ratio="1 / 1" sizes="(min-width: 900px) 16vw, 33vw" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="pdp__info">
+          <p class="pdp__cat">{p.category}</p>
+          <h1>{p.name}</h1>
+          <p class:list={['pdp__price', { 'pdp__price--quote': isQuote }]}>{priceLabel(p)}</p>
+          <p class="pdp__desc">{p.description}</p>
+
+          {p.specs.length > 0 && (
+            <dl class="specs">{p.specs.map((s) => <div><dt>{s.label}</dt><dd>{s.value}</dd></div>)}</dl>
+          )}
+
+          <form class="enquiry" id="enquiry" novalidate data-wa-base={waBase} data-name={p.name} data-verb={verb}>
+            <h2>Tell us what you need</h2>
+
+            <div class="field">
+              <label for="f-qty">Quantity</label>
+              <input id="f-qty" type="text" inputmode="numeric" placeholder="e.g. 500" data-label="Quantity" />
+            </div>
+
+            {p.options.map((o) => (
+              <div class="field">
+                <label for={`f-${o.key}`}>{o.label}</label>
+                {o.type === 'choice' ? (
+                  <select id={`f-${o.key}`} data-label={o.label}>
+                    <option value="">Choose...</option>
+                    {(o.choices ?? []).map((c) => <option value={c}>{c}</option>)}
+                  </select>
+                ) : (
+                  <input id={`f-${o.key}`} type={o.type === 'number' ? 'number' : 'text'} data-label={o.label} />
+                )}
+                {o.hint && <span class="hint">{o.hint}</span>}
+              </div>
+            ))}
+
+            <div class="field">
+              <label for="f-notes">Special instructions</label>
+              <textarea id="f-notes" data-label="Notes" placeholder="Size, colours, wording, deadline..."></textarea>
+            </div>
+
+            <div class="art">
+              <strong>Artwork</strong>
+              <p>Have a design? Send the file in the WhatsApp chat after it opens. No design yet? Tell us what you want on it.</p>
+            </div>
+
+            <div class="preview">
+              <span class="preview__label" id="preview-label">Your WhatsApp message</span>
+              <output id="wa-preview" aria-labelledby="preview-label">{defaultMsg}</output>
+            </div>
+
+            <div class="cta-row">
+              <a class="btn" id="wa-link" href={waLink(defaultMsg)} target="_blank" rel="noopener noreferrer">{isQuote ? 'Request a quote on WhatsApp' : 'Order on WhatsApp'} <span class="arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+              <a class="btn btn--ghost" href={`tel:${phone.tel}`}>Call {phone.display}</a>
+            </div>
+          </form>
+
+          <ol class="steps">
+            <li><b>01</b>Choose your product and tell us what you need.</li>
+            <li><b>02</b>Send the message on WhatsApp, with your design if you have one.</li>
+            <li><b>03</b>Crosslink replies to confirm the details and the price.</li>
+          </ol>
+
+          {p.faqs.length > 0 && (
+            <div class="faq">{p.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}</div>
+          )}
+        </div>
+      </div>
+
+      {related.length > 0 && (
+        <section class="related" aria-labelledby="related-h">
+          <h2 class="hd hd--m" id="related-h">More in {p.category}</h2>
+          <ul class="pgrid">{related.map((r) => <ProductCard product={r} />)}</ul>
+        </section>
+      )}
+    </div>
+  </section>
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('enquiry') as HTMLFormElement | null;
+  const link = document.getElementById('wa-link') as HTMLAnchorElement | null;
+  const out = document.getElementById('wa-preview');
+  if (form && link && out) {
+    const base = form.dataset.waBase || '';
+    const name = form.dataset.name || '';
+    const verb = form.dataset.verb || 'enquire about';
+    const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[data-label]'));
+
+    const update = () => {
+      const lines = [`Hello Crosslink Printers, I would like to ${verb} ${name}.`];
+      for (const f of fields) {
+        const v = f.value.trim();
+        if (v) lines.push(`${f.dataset.label}: ${v}.`);
+      }
+      lines.push('I found this product on your website.');
+      const msg = lines.join('\n');
+      link.href = `${base}?text=${encodeURIComponent(msg)}`;
+      out.textContent = msg;
+    };
+
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    form.addEventListener('submit', (e) => e.preventDefault());
+    update();
+  }
+</script>

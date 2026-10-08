@@ -1,0 +1,34 @@
+---
+import { Picture } from 'astro:assets';
+import { getProductImages } from '../data/productImages';
+
+interface Props {
+  slug: string;
+  name: string;
+  index?: number;
+  ratio?: string;
+  sizes?: string;
+  eager?: boolean;
+  decorative?: boolean;  // true on cards, where the name is already next to the image
+}
+const { slug, name, index = 0, ratio = '1 / 1', sizes = '(min-width: 900px) 30vw, 50vw', eager = false, decorative = false } = Astro.props;
+const img = getProductImages(slug)[index];
+---
+<div class="media" style={`aspect-ratio:${ratio}`} aria-hidden={decorative ? 'true' : undefined}>
+  {img ? (
+    <Picture
+      src={img}
+      alt={decorative ? '' : `${name} by Crosslink Printers`}
+      formats={['avif', 'webp']}
+      widths={[320, 480, 800, 1200]}
+      sizes={sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding={eager ? 'sync' : 'async'}
+    />
+  ) : (
+    <div class="media__ph" role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : `${name} (photo to be added)`}>
+      <span class="media__ph-label">{name}</span>
+      {import.meta.env.DEV && <small>src/assets/services/{slug}/{slug}{index ? `-${index + 1}` : ''}.jpg</small>}
+    </div>
+  )}
+</div>

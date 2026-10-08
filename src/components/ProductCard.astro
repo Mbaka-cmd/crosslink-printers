@@ -1,0 +1,24 @@
+---
+import type { Product } from '../data/products';
+import { priceLabel } from '../data/products';
+import ProductImage from './ProductImage.astro';
+interface Props { product: Product; }
+const { product: p } = Astro.props;
+const search = [p.name, p.category, ...p.tags].join(' ').toLowerCase();
+---
+<li
+  class="pcard"
+  data-slug={p.slug}
+  data-cat={p.categorySlug}
+  data-name={p.name.toLowerCase()}
+  data-search={search}
+  data-price={p.startingPrice ?? ''}
+  data-rank={p.featured ? 0 : 1}
+  data-order={p.order}
+>
+  <ProductImage slug={p.slug} name={p.name} ratio="4 / 5" decorative sizes="(min-width: 1100px) 22vw, (min-width: 640px) 30vw, 46vw" />
+  <span class="pcard__cat">{p.category}</span>
+  <h3 class="pcard__name"><a href={`/services/${p.slug}`}>{p.name}</a></h3>
+  <span class:list={['pcard__price', { 'pcard__price--quote': p.startingPrice === null }]}>{priceLabel(p)}</span>
+  <span class="pcard__cta" aria-hidden="true">Order / Enquire <span class="arrow">&rarr;</span></span>
+</li>

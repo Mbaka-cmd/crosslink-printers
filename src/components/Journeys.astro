@@ -1,0 +1,27 @@
+---
+import { journeys } from '../data/journeys';
+import Media from './Media.astro';
+---
+<section class="section on-ink" id="jobs">
+  <div class="container">
+    <p class="eyebrow">Choose your print job</p>
+    <h2 class="hd hd--l">What are you<br />printing today?</h2>
+    <div class="journeys" data-reveal>
+      {journeys.map((j) => (
+        <article class:list={['journey', 'zoom', { 'journey--yellow': j.yellow }]}>
+          {!j.flip && <div class="journey__media"><Media name={j.image as any} ratio={j.ratio} sizes="(min-width: 900px) 45vw, 100vw" /></div>}
+          <div class="journey__body">
+            <span class="journey__num">{j.num}</span>
+            <h3>{j.title}</h3>
+            <ul class="slash">{j.items.map((i) => <li>{i}</li>)}</ul>
+            <a class="journey__cta" href={j.href} {...(j.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+              {j.cta} <span class="arrow" aria-hidden="true">&rarr;</span>
+              {j.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+            </a>
+          </div>
+          {j.flip && <div class="journey__media"><Media name={j.image as any} ratio={j.ratio} sizes="(min-width: 900px) 45vw, 100vw" /></div>}
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

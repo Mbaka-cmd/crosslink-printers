@@ -1,0 +1,70 @@
+---
+import '@fontsource-variable/archivo';
+import '../styles/global.css';
+import '../styles/sections.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'Crosslink Printers Nkubu | Printing & Digital Services',
+  description = 'Crosslink Printers Nkubu offers printing, receipt books, wedding and invitation cards, stickers, posters, calendars, photocopying, lamination, binding, typesetting, passport photos and digital services.',
+  path = '/',
+  noindex = false,
+} = Astro.props;
+
+const canonical = site.url ? new URL(path, site.url).toString() : null;
+
+// Only confirmed facts. No coordinates, hours, ratings, price range or social profiles.
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name,
+  description: site.positioning,
+  telephone: site.phones.map((p) => p.tel),
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Mt Kenya University Street, opposite Rezama Chemist',
+    addressLocality: site.address.locality,
+    addressCountry: site.address.country,
+  },
+  ...(site.url ? { url: site.url } : {}),
+};
+---
+
+<!doctype html>
+<html lang="en-KE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#171717" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_KE" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot name="header" />
+    <main id="main"><slot /></main>
+    <slot name="footer" />
+  </body>
+</html>

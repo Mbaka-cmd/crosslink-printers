@@ -1,0 +1,27 @@
+---
+import { waLink, messages } from '../data/site';
+import Media from './Media.astro';
+const labels = ['Receipt books', 'Business cards', 'Stickers', 'Posters'];
+---
+<section class="section feature">
+  <div class="container">
+    <p class="eyebrow">Business printing</p>
+    <h2 class="hd hd--l">Your business<br />deserves to look<br />like a business.</h2>
+    <div class="feature__grid" data-reveal>
+      <div class="feature__main zoom">
+        <Media name="feature-receipt" ratio="4 / 5" sizes="(min-width: 900px) 45vw, 100vw" />
+      </div>
+      <div class="feature__side">
+        <p class="lead">Receipt books, business cards, stickers, posters and promotional materials, printed for businesses that need their work to look professional.</p>
+        <div class="cta-row"><a class="btn" href={waLink(messages.quote)} target="_blank" rel="noopener noreferrer">Start a business print job <span class="arrow" aria-hidden="true">&rarr;</span><span class="visually-hidden"> (opens in a new tab)</span></a></div>
+        <div class="feature__pair">
+          <div class="feature__card zoom"><Media name="feature-card" ratio="3 / 2" sizes="(min-width: 900px) 40vw, 100vw" /></div>
+          <div class="feature__sticker zoom"><Media name="feature-sticker" ratio="1 / 1" sizes="(min-width: 900px) 18vw, 45vw" /></div>
+        </div>
+      </div>
+    </div>
+    <ol class="feature__labels">
+      {labels.map((l, i) => <li><span>{String(i + 1).padStart(2, '0')}</span>{l}</li>)}
+    </ol>
+  </div>
+</section>

@@ -1,0 +1,70 @@
+---
+import { site, mapsLink, waLink } from '../data/site';
+const phone = site.phones[0];
+---
+<footer class="site-footer on-ink">
+  <div class="container">
+    <p class="footer-brand">Crosslink Printers</p>
+    <p class="footer-tag">Professional Printing &amp; Digital Services in Nkubu.</p>
+    <div class="footer-cols">
+      <div>
+        <h2 class="footer-h">Pages</h2>
+        <ul>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/our-work">Our Work</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-h">Contact</h2>
+        <ul>
+          {site.phones.map((ph) => <li><a href={`tel:${ph.tel}`}>{ph.display}</a></li>)}
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-h">Location</h2>
+        <ul>
+          <li>Mt Kenya University Street</li>
+          <li>Opposite Rezama Chemist</li>
+          <li>Nkubu</li>
+          <li><a href={mapsLink()} target="_blank" rel="noopener noreferrer">Get directions &nearr;</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-bottom"><span>Website by <strong>{site.credit.name}</strong></span><span>&copy; 2026 Crosslink Printers. All Rights Reserved.</span></p>
+  </div>
+</footer>
+
+<nav class="action-bar" aria-label="Quick actions">
+  <a href={`tel:${phone.tel}`}>Call</a>
+  <a href={waLink()} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  <a href={mapsLink()} target="_blank" rel="noopener noreferrer">Directions</a>
+</nav>
+
+<script>
+  // Subtle entrance for below-the-fold blocks. Nothing is hidden without JS, or with reduced motion.
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (items.length && !reduce && 'IntersectionObserver' in window) {
+    const vh = window.innerHeight;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.remove('is-pending');
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
+    );
+    for (const el of items) {
+      if (el.getBoundingClientRect().top > vh) {
+        el.classList.add('is-pending');
+        io.observe(el);
+      }
+    }
+  }
+</script>
