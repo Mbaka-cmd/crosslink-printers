@@ -21,6 +21,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro build --site https://mbaka-cmd.github.io --base /crosslink-printers
+        env:
+          PUBLIC_SHOW_DEMO: 'true'
       - run: node scripts/fix-base.mjs /crosslink-printers
       - uses: actions/upload-pages-artifact@v3
         with:

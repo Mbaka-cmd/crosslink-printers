@@ -6,6 +6,6 @@ export const USD_RATE: number | null = null;
 const DEMO_USD_RATE = 130;
 
 export function usdRate(): number | null {
-  return USD_RATE ?? (import.meta.env.DEV ? DEMO_USD_RATE : null);
+  return USD_RATE ?? ((import.meta.env.DEV || import.meta.env.PUBLIC_SHOW_DEMO === 'true') ? DEMO_USD_RATE : null);
 }
 export const rateIsDemo = USD_RATE === null;

@@ -105,6 +105,6 @@ export function getExtras(slug: string, name = ''): Extras {
     demo: false,
   };
   const hasReal = real.tiers.length > 0 || real.turnaround.length > 0 || real.templates.length > 0 || real.info.length > 0 || real.intro !== null;
-  if (!hasReal && import.meta.env.DEV) return demoExtras(name);
+  if (!hasReal && (import.meta.env.DEV || import.meta.env.PUBLIC_SHOW_DEMO === 'true')) return demoExtras(name);
   return real;
 }
