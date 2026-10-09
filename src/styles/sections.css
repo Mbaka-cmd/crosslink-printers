@@ -217,3 +217,7 @@
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
   .row__thumb { transform: translateY(-50%); }
 }
+/* footer credit link */
+.footer-bottom a.credit { text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.footer-bottom a.credit:hover { color: var(--yellow); }
+.footer-bottom a.credit:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
